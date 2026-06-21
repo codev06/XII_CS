@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Pulse Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Premium Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background 0.8s ease, color 0.5s ease;
+        }
+        /* Wallpaper Theme Presets */
+        .theme-obsidian {
+            background: radial-gradient(circle at top left, #1a1b2f, #0d0e15 80%);
+        }
+        .theme-violet {
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 50%, #0c0a0f 100%);
+        }
+        .theme-teal {
+            background: radial-gradient(circle at bottom right, #062f2f, #080c10 75%);
+        }
+        .theme-minimal {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        }
+
+        /* Glassmorphic Layering */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .theme-minimal .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+
+        /* Smooth Custom Transitions */
+        .transition-all-custom {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+</head>
+<body class="theme-obsidian min-h-screen text-slate-100 theme-minimal:text-slate-800 flex items-center justify-center p-4 md:p-8">
+
+    <div class="w-full max-w-4xl mx-auto space-y-6">
+        
+        <!-- Wallpaper / Color Theme Controller -->
+        <div class="flex justify-between items-center bg-black/20 theme-minimal:bg-white/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/5 theme-minimal:border-black/5">
+            <span class="text-xs font-bold tracking-wider uppercase opacity-70 text-white theme-minimal:text-slate-800">Visual Workspace Palette</span>
+            <div class="flex gap-2">
+                <button onclick="changeTheme('obsidian')" class="w-7 h-7 rounded-full bg-[#1a1b2f] border-2 border-white/20 hover:scale-110 transition-all-custom" title="Midnight Obsidian"></button>
+                <button onclick="changeTheme('violet')" class="w-7 h-7 rounded-full bg-[#311042] border-2 border-white/20 hover:scale-110 transition-all-custom" title="Sunset Violet"></button>
+                <button onclick="changeTheme('teal')" class="w-7 h-7 rounded-full bg-[#062f2f] border-2 border-white/20 hover:scale-110 transition-all-custom" title="Aurora Teal"></button>
+                <button onclick="changeTheme('minimal')" class="w-7 h-7 rounded-full bg-slate-100 border-2 border-black/10 hover:scale-110 transition-all-custom" title="Clean Slate"></button>
+            </div>
+        </div>
+
+        <!-- Main Workspace Shell -->
+        <div class="glass-card rounded-3xl p-6 md:p-10 transition-all-custom">
+            
+            <!-- Sleek Minimal Header -->
+            <div class="mb-8 text-center md:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-3">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    Real-time Pipeline Stream
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 theme-minimal:from-slate-800 theme-minimal:to-slate-600">
+                    Sentiment Pulse App
+                </h1>
+                <p class="text-slate-400 theme-minimal:text-slate-500 mt-2 text-sm md:text-base font-light">
+                    Transform unstructured feedback streams into high-precision, visually mapped emotional indices.
+                </p>
+            </div>
+
+            <!-- Ingestion Stream Form -->
+            <div class="mb-8">
+                <form id="pipelineForm" class="space-y-4">
+                    <div class="relative">
+                        <textarea id="payloadBox" name="text" placeholder="Type or paste your text entry here..." required class="w-full h-36 bg-black/15 theme-minimal:bg-white text-white theme-minimal:text-slate-800 rounded-2xl p-5 border border-white/10 theme-minimal:border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 resize-none placeholder-slate-500 text-sm md:text-base font-light transition-all-custom"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-95 text-white font-bold py-4 rounded-xl shadow-lg shadow-cyan-500/10 hover:scale-[1.01] transition-all-custom text-sm md:text-base tracking-wide uppercase">
+                        Analyze Pipeline Stream
+                    </button>
+                </form>
+            </div>
+
+            <!-- Dashboard Analytics Console -->
+            <div id="resultsGrid" style="display:none;" class="space-y-6 pt-6 border-t border-white/5 theme-minimal:border-black/5 transition-all-custom">
+                
+                <!-- Central Sentiment Visual Gauge -->
+                <div class="p-6 rounded-2xl bg-white/5 theme-minimal:bg-slate-50 border border-white/5 theme-minimal:border-black/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                    
+                    <!-- Dynamic Emotion Card -->
+                    <div class="text-center md:text-left space-y-1">
+                        <span class="text-[10px] font-bold tracking-widest text-slate-400 theme-minimal:text-slate-500 uppercase">Classified Emotion Target</span>
+                        <div class="text-4xl font-black tracking-tight transition-all-custom" id="m2_label">None</div>
+                        <p class="text-xs text-slate-500 font-light mt-1 max-w-xs truncate" id="rawTextQuote">"Evaluating conversation stream..."</p>
+                    </div>
+
+                    <!-- Slide Track Slider Needle -->
+                    <div class="w-full md:w-1/2 space-y-3">
+                        <div class="flex justify-between text-[10px] font-bold tracking-wide text-slate-400 theme-minimal:text-slate-500 uppercase">
+                            <span>Negative</span>
+                            <span>Neutral</span>
+                            <span>Positive</span>
+                        </div>
+                        
+                        <!-- Track Line -->
+                        <div class="relative w-full h-4 bg-black/30 theme-minimal:bg-slate-200 rounded-full overflow-hidden border border-white/5">
+                            <!-- Needle -->
+                            <div id="gaugeNeedle" class="absolute top-0 bottom-0 w-3 bg-cyan-400 shadow-lg shadow-cyan-400/50 rounded-full transition-all duration-1000 ease-out" style="left: 50%; transform: translateX(-50%);"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400 theme-minimal:text-slate-500">Fused Consensus Index:</span>
+                            <span class="text-sm font-extrabold text-cyan-400" id="m4_fused">0.0000</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Secondary Metric Matrix Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    <!-- Real-Time Snapshot -->
+                    <div class="p-5 rounded-xl bg-black/10 theme-minimal:bg-slate-100/50 border border-white/5 theme-minimal:border-black/5 space-y-2">
+                        <span class="text-[10px] font-bold tracking-widest text-slate-400 theme-minimal:text-slate-500 uppercase">Linguistic Snapshot</span>
+                        <div class="text-2xl font-extrabold" id="m2_polarity">0.0000</div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Subjectivity:</span>
+                            <span id="m2_subj" class="font-medium">0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- SGD Trend Tracker -->
+                    <div class="p-5 rounded-xl bg-black/10 theme-minimal:bg-slate-100/50 border border-white/5 theme-minimal:border-black/5 space-y-2">
+                        <span class="text-[10px] font-bold tracking-widest text-slate-400 theme-minimal:text-slate-500 uppercase">SGD Projector</span>
+                        <div class="text-2xl font-extrabold" id="m3_forecast">0.0000</div>
+                        <p class="text-[10px] text-slate-500 font-light">Projected forward trajectory ($\hat{y}_{t+1}$) over streaming data points.</p>
+                    </div>
+
+                    <!-- Optimizer Weighting Strategy -->
+                    <div class="p-5 rounded-xl bg-black/10 theme-minimal:bg-slate-100/50 border border-white/5 theme-minimal:border-black/5 space-y-2">
+                        <span class="text-[10px] font-bold tracking-widest text-slate-400 theme-minimal:text-slate-500 uppercase">Fusion Strategy</span>
+                        <div class="text-lg font-bold truncate mt-1" id="m4_leaning">Contextual</div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Reliability Index:</span>
+                            <span id="m4_reliability" class="font-medium">0.00</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Switch Wallpaper Themes Instantly
+        function changeTheme(themeName) {
+            document.body.className = `theme-${themeName} min-h-screen text-slate-100 theme-minimal:text-slate-800 flex items-center justify-center p-4 md:p-8`;
+            localStorage.setItem('sentiment-visual-palette', themeName);
+        }
+
+        // Cache User Layout Selection
+        const cachedPalette = localStorage.getItem('sentiment-visual-palette');
+        if (cachedPalette) {
+            changeTheme(cachedPalette);
+        }
+
+        // Handle Pipeline Submissions
+        document.getElementById('pipelineForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const textContent = document.getElementById('payloadBox').value;
+            const payloadData = new URLSearchParams();
+            payloadData.append('text', textContent);
+            
+            const res = await fetch('/analyze', { method: 'POST', body: payloadData });
+            if (res.ok) {
+                const data = await res.json();
+                
+                // Unveil the performance cards block
+                document.getElementById('resultsGrid').style.display = 'block';
+
+                // Map target parameters cleanly to the UI variables
+                document.getElementById('m2_label').innerText = data.current_metrics.label;
+                document.getElementById('m2_polarity').innerText = data.current_metrics.score.toFixed(4);
+                document.getElementById('m2_subj').innerText = data.current_metrics.subjectivity.toFixed(4);
+                
+                document.getElementById('m3_forecast').innerText = data.predicted_next_trend.toFixed(4);
+                
+                const fusedScore = data.fused_metrics.final_polarity;
+                document.getElementById('m4_fused').innerText = fusedScore.toFixed(4);
+                document.getElementById('m4_leaning').innerText = data.fused_metrics.bias_leaning;
+                document.getElementById('m4_reliability').innerText = data.fused_metrics.reliability.toFixed(2);
+                
+                document.getElementById('rawTextQuote').innerText = `"${data.raw_text}"`;
+
+                // Shift progress needle dynamically using mathematical map scaling (-1.0 to +1.0) into UI percentage (0% to 100%)
+                const percentage = ((fusedScore + 1) / 2) * 100;
+                const needle = document.getElementById('gaugeNeedle');
+                needle.style.left = `calc(${percentage}% - 6px)`;
+
+                // Dynamic gauge lighting based on consensus score direction
+                const labelElem = document.getElementById('m2_label');
+                if (fusedScore > 0.15) {
+                    labelElem.className = "text-4xl font-black tracking-tight text-emerald-400 transition-all-custom";
+                    needle.className = "absolute top-0 bottom-0 w-3 bg-emerald-400 shadow-lg shadow-emerald-400/50 rounded-full transition-all duration-1000 ease-out";
+                } else if (fusedScore < -0.15) {
+                    labelElem.className = "text-4xl font-black tracking-tight text-rose-400 transition-all-custom";
+                    needle.className = "absolute top-0 bottom-0 w-3 bg-rose-400 shadow-lg shadow-rose-400/50 rounded-full transition-all duration-1000 ease-out";
+                } else {
+                    labelElem.className = "text-4xl font-black tracking-tight text-slate-300 theme-minimal:text-slate-700 transition-all-custom";
+                    needle.className = "absolute top-0 bottom-0 w-3 bg-slate-400 shadow-lg shadow-slate-400/50 rounded-full transition-all duration-1000 ease-out";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
